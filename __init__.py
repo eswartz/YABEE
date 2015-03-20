@@ -421,6 +421,7 @@ def register():
     bpy.types.Object.yabee_name = StringProperty(name="YABEE_Name", default="Unknown")
     bpy.types.Mesh.yabee_name = StringProperty(name="YABEE_Name", default="Unknown")
     bpy.types.Material.yabee_name = StringProperty(name="YABEE_Name", default="Unknown")
+    #bpy.types.MaterialTextureSlot.yabee_name = StringProperty(name="YABEE_Name", default="Unknown")    # can't modify!
     bpy.types.Texture.yabee_name = StringProperty(name="YABEE_Name", default="Unknown")
     bpy.types.Armature.yabee_name = StringProperty(name="YABEE_Name", default="Unknown")
     bpy.types.Curve.yabee_name = StringProperty(name="YABEE_Name", default="Unknown")

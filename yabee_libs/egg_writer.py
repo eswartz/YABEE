@@ -685,22 +685,43 @@ class EGGMeshObjectData(EGGBaseObjectData):
         '''
         if TEXTURE_PROCESSOR in ('SIMPLE', 'RAW'):
             textures = []
+            used_textures = {}
+            hadMaterial = False
             if face.material_index < len(self.obj_ref.data.materials):
+                hadMaterial = True
                 mat = self.obj_ref.data.materials[face.material_index]
                 if not mat:
                     return attributes
                 for tex in [tex for tex in mat.texture_slots if tex]:
-                    tex_name = tex.texture.yabee_name
-                    if tex_name in USED_TEXTURES and tex_name not in textures:
-                            textures.append(tex_name)
+                    tex_name = tex.texture.image.yabee_name
+                    if not tex_name in used_textures:
+                        tn = tex.name
+                        # HACK: copying a scene renames all the material texture slots,
+                        # but we can't add a custom yabee_name property to hold it :(
+                        # So, "un-uniquify" a name...
+                        if tn[-4:] == ".001":
+                            tn = tn[0:-4] 
+                        used_textures[tex_name] = tn
+                        #print("for",tex_name,"added",tn,"from",tex)
+                            
             
             # use uv map image texture as face texture if appropriate flag 
             # checked, or material has not valid texture, or object has not material
+            
+            if not hadMaterial:
+                used_textures = USED_TEXTURES
+                
             for uv_tex in self.obj_ref.data.uv_textures:
-                if uv_tex.data[face.index].image:
-                    tex_name = '%s_%s' % (uv_tex.name, uv_tex.data[face.index].image.yabee_name)
-                    if tex_name in USED_TEXTURES and tex_name not in textures:
-                        textures.append(tex_name)
+                facedata = uv_tex.data[face.index]
+                if facedata.image:
+                    if not hadMaterial:
+                        tex_name = '%s_%s' % (uv_tex.name, uv_tex.data[face.index].image.yabee_name)
+                        if tex_name in used_textures and tex_name not in textures:
+                            textures.append(tex_name)
+                    else:
+                        tex_name = used_textures.get(facedata.image.yabee_name, None) 
+                        if tex_name and tex_name not in textures:
+                            textures.append(tex_name)
                             
             for tex_name in textures:
                 attributes.append('<TRef> { %s }' % eggSafeName(tex_name))
