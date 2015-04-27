@@ -693,16 +693,19 @@ class EGGMeshObjectData(EGGBaseObjectData):
                 if not mat:
                     return attributes
                 for tex in [tex for tex in mat.texture_slots if tex]:
-                    tex_name = tex.texture.image.yabee_name
-                    if not tex_name in used_textures:
-                        tn = tex.name
-                        # HACK: copying a scene renames all the material texture slots,
-                        # but we can't add a custom yabee_name property to hold it :(
-                        # So, "un-uniquify" a name...
-                        if tn[-4:] == ".001":
-                            tn = tn[0:-4] 
-                        used_textures[tex_name] = tn
-                        #print("for",tex_name,"added",tn,"from",tex)
+                    try:
+                        tex_name = tex.texture.image.yabee_name
+                        if not tex_name in used_textures:
+                            tn = tex.name
+                            # HACK: copying a scene renames all the material texture slots,
+                            # but we can't add a custom yabee_name property to hold it :(
+                            # So, "un-uniquify" a name...
+                            if tn[-4:] == ".001":
+                                tn = tn[0:-4] 
+                            used_textures[tex_name] = tn
+                            #print("for",tex_name,"added",tn,"from",tex)
+                    except AttributeError:
+                        pass # no image
                             
             
             # use uv map image texture as face texture if appropriate flag 
