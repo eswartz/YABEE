@@ -700,8 +700,15 @@ class EGGMeshObjectData(EGGBaseObjectData):
                             # HACK: copying a scene renames all the material texture slots,
                             # but we can't add a custom yabee_name property to hold it :(
                             # So, "un-uniquify" a name...
-                            if tn[-4:] == ".001":
-                                tn = tn[0:-4] 
+                            suffix = tn[-4:]
+                            if suffix == ".001":
+                                tn = tn[0:-4]
+                            elif len(suffix) and suffix[0] == '.':
+                                try:
+                                    num = int(suffix[1:])
+                                    tn = tn[0:-3] + "%03d" % (num - 1)
+                                except:
+                                    pass 
                             used_textures[tex_name] = tn
                             #print("for",tex_name,"added",tn,"from",tex)
                     except AttributeError:
@@ -725,7 +732,11 @@ class EGGMeshObjectData(EGGBaseObjectData):
                         tex_name = used_textures.get(facedata.image.yabee_name, None) 
                         if tex_name and tex_name not in textures:
                             textures.append(tex_name)
-                            
+                elif hadMaterial:
+                    for texname in used_textures.values():
+                        if not texname in textures:
+                            textures.append(texname)
+                         
             for tex_name in textures:
                 attributes.append('<TRef> { %s }' % eggSafeName(tex_name))
         
