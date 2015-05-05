@@ -332,7 +332,7 @@ class EGGNurbsCurveObjectData(EGGBaseObjectData):
                 cur_str += '<NURBSCurve> {\n'
                 cur_str += '  <Scalar> subdiv { %i }\n' % (spline.resolution_u * \
                                                     (spline.point_count_u - 1))
-                cur_str += '  <Order> { %i }\n' % spline.order_u
+                cur_str += '  <Order> { %i }\n' % min(4, spline.order_u)    # Panda3D limit
                 cur_str += '  <Knots> { %s }\n' % ' '.join(map(str2f, knots))
                 cur_str += '  <VertexRef> {\n    %s\n    <Ref> { %s } \n  }\n' % ( 
                         ' '.join([str(i) for i in range(idx, idx + \
